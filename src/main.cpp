@@ -2,16 +2,27 @@
 #include <Bounce.h>  // Bounce library makes button change detection easy
 const int channel = 1;
 
+const int led = LED_BUILTIN;
+
 Bounce button1 = Bounce(1, 5);  // 5 = 5 ms debounce time
 Bounce button2 = Bounce(2, 5);  // 5 = 5 ms debounce time
 
 void setup() {
   pinMode(1, INPUT_PULLUP);
   pinMode(2, INPUT_PULLUP);
+  pinMode(led, OUTPUT);
   usbMIDI.begin();
 }
 
 void loop() {
+
+  digitalWrite(led, HIGH);
+  usbMIDI.sendNoteOn(70, 99, channel);
+  delay(200);
+  digitalWrite(led, LOW);
+  usbMIDI.sendNoteOff(70, 99, channel);
+  delay(300);
+
   button1.update();
   button2.update();
 
