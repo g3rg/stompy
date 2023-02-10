@@ -18,10 +18,10 @@ void loop() {
 
   digitalWrite(led, HIGH);
   usbMIDI.sendNoteOn(70, 99, channel);
-  delay(200);
+  delay(500);
   digitalWrite(led, LOW);
   usbMIDI.sendNoteOff(70, 99, channel);
-  delay(300);
+  delay(500);
 
   button1.update();
   button2.update();
