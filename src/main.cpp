@@ -2,10 +2,20 @@
 #include <Bounce.h>  // Bounce library makes button change detection easy
 const int channel = 1;
 
+const int oscillateNote = 0; // 0 for off, 1 for on
+const int oscillateControl = 1;
+
 const int led = LED_BUILTIN;
 int ledState = LOW;
 unsigned long previousMillis = 0;
+unsigned long previousControlMillis = 0;
+
 const long interval = 250;
+
+const long controlInterval = 50;
+const int control = 10;
+int controlState = 1;
+int controlValue = 63;
 
 Bounce button1 = Bounce(1, 5);  // 5 = 5 ms debounce time
 Bounce button2 = Bounce(2, 5);  // 5 = 5 ms debounce time
@@ -35,14 +45,31 @@ void loop() {
     // if the LED is off turn it on and vice-versa:
     if (ledState == LOW) {
       ledState = HIGH;
-      usbMIDI.sendNoteOn(60, 99, channel);
+      if (oscillateNote == 1) {
+        usbMIDI.sendNoteOn(60, 99, channel);
+      }
     } else {
       ledState = LOW;
-      usbMIDI.sendNoteOff(60, 99, channel);
+      if (oscillateNote == 1) {
+        usbMIDI.sendNoteOff(60, 99, channel);
+      }
     }
 
     // set the LED with the ledState of the variable:
     digitalWrite(led, ledState);
+  }
+
+  if (currentMillis - previousControlMillis >= controlInterval) {
+    previousControlMillis = currentMillis;
+
+    if (controlValue == 0) {
+      controlState = 1;
+    } else if (controlValue == 127) {
+      controlState = -1;
+    }
+    controlValue += controlState;
+    usbMIDI.sendControlChange(control, controlValue, channel);
+    Serial.println(controlValue);
   }
 
 
